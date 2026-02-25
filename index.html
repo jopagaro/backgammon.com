@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Backgammon</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Mode selection overlay -->
+    <div id="mode-select" class="overlay">
+      <div class="modal">
+        <div class="logo">
+          <span class="logo-icon">⬡</span>
+          <h1>Backgammon</h1>
+        </div>
+        <p class="subtitle">Classic strategy board game</p>
+        <div class="mode-buttons">
+          <button id="btn-vs-ai" class="mode-btn">
+            <span class="mode-icon">🤖</span>
+            <span class="mode-title">vs Computer</span>
+            <span class="mode-desc">Challenge the AI opponent</span>
+          </button>
+          <button id="btn-hotseat" class="mode-btn">
+            <span class="mode-icon">👥</span>
+            <span class="mode-title">2 Players</span>
+            <span class="mode-desc">Hot seat — same device</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game screen -->
+    <div id="game-screen" class="hidden">
+
+      <!-- Player bar top — Black -->
+      <div id="player-bar-top" class="player-bar">
+        <div class="player-avatar black-avatar">B</div>
+        <div class="player-name-wrap">
+          <span class="player-name" id="black-name">Black</span>
+          <span class="player-score-badge"><span id="black-score">0</span> pts</span>
+        </div>
+        <div class="player-stat">
+          <span class="stat-label">Pips</span>
+          <span class="stat-val" id="black-pips">167</span>
+        </div>
+        <div class="player-stat">
+          <span class="stat-label">Off</span>
+          <span class="stat-val" id="black-borne">0</span>
+        </div>
+        <div class="turn-pill hidden" id="turn-black">YOUR TURN</div>
+      </div>
+
+      <!-- Canvas container -->
+      <div id="canvas-container">
+        <canvas id="board-canvas"></canvas>
+      </div>
+
+      <!-- Player bar bottom — White -->
+      <div id="player-bar-bottom" class="player-bar">
+        <div class="player-avatar white-avatar">W</div>
+        <div class="player-name-wrap">
+          <span class="player-name" id="white-name">White</span>
+          <span class="player-score-badge"><span id="white-score">0</span> pts</span>
+        </div>
+        <div class="player-stat">
+          <span class="stat-label">Pips</span>
+          <span class="stat-val" id="white-pips">167</span>
+        </div>
+        <div class="player-stat">
+          <span class="stat-label">Off</span>
+          <span class="stat-val" id="white-borne">0</span>
+        </div>
+        <div class="turn-pill hidden" id="turn-white">YOUR TURN</div>
+      </div>
+
+      <!-- Controls bar -->
+      <div id="controls-bar">
+        <div class="controls-left">
+          <button id="btn-double" class="ctrl-btn secondary" disabled>Offer Double</button>
+          <button id="btn-roll"   class="ctrl-btn primary"   disabled>Roll Dice</button>
+          <button id="btn-undo"   class="ctrl-btn ghost"     disabled>↩ Undo</button>
+          <!-- Doubling-cube response buttons (hidden by default) -->
+          <button id="btn-accept"  class="ctrl-btn accent  hidden">Accept</button>
+          <button id="btn-decline" class="ctrl-btn danger  hidden">Decline</button>
+        </div>
+        <div id="status-msg" class="status-message"></div>
+        <div class="controls-right">
+          <button id="btn-new-game" class="ctrl-btn ghost">New Game</button>
+        </div>
+      </div>
+
+      <!-- Doubling cube DOM element (absolute-positioned) -->
+      <div id="cube-display" class="cube-neutral">
+        <span id="cube-value">64</span>
+      </div>
+
+    </div><!-- /#game-screen -->
+
+    <!-- Win overlay -->
+    <div id="win-overlay" class="overlay hidden">
+      <div class="modal">
+        <div class="win-trophy">🏆</div>
+        <h2 id="win-title">White Wins!</h2>
+        <p id="win-desc" class="win-desc">Regular game — 1 point</p>
+        <div class="win-scores">
+          <div class="win-score-item">
+            <span class="win-score-label">White</span>
+            <span class="win-score-val" id="win-white-score">0</span>
+          </div>
+          <div class="win-score-item">
+            <span class="win-score-label">Black</span>
+            <span class="win-score-val" id="win-black-score">0</span>
+          </div>
+        </div>
+        <button id="btn-review"      class="mode-btn" style="margin-bottom:10px">Review Game</button>
+        <button id="btn-play-again"  class="mode-btn">Play Again</button>
+        <button id="btn-change-mode" class="ctrl-btn ghost" style="margin-top:8px">Change Mode</button>
+      </div>
+    </div>
+
+    <!-- Review panel (slides in from right) -->
+    <div id="review-panel" class="hidden">
+      <div id="review-header">
+        <div>
+          <div id="review-title">Game Review</div>
+          <div id="review-accuracy">
+            <span class="acc-white">W <strong id="acc-white-val">—</strong>%</span>
+            <span class="acc-black">B <strong id="acc-black-val">—</strong>%</span>
+          </div>
+        </div>
+        <button id="btn-close-review" class="ctrl-btn ghost">✕</button>
+      </div>
+
+      <div id="review-loading" class="hidden">
+        <div class="spinner"></div>
+        <div id="review-loading-msg">Analysing…</div>
+      </div>
+
+      <div id="review-turn-list"></div>
+
+      <div id="review-footer">
+        <button id="btn-review-prev" class="rev-nav-btn">←</button>
+        <span id="review-nav-label">— / —</span>
+        <button id="btn-review-next" class="rev-nav-btn">→</button>
+      </div>
+    </div>
+
+    <!-- Floating move-detail card (overlays board during review) -->
+    <div id="move-detail-card" class="hidden"></div>
+
+  </div><!-- /#app -->
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
