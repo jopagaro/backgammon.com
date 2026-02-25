@@ -75,15 +75,26 @@ export class DiceRenderer {
     const total = n * DIE_SIZE + (n - 1) * SPACING;
     const startX = BAR_X + BAR_W / 2 - total / 2;
 
-    // Determine which dice are still available (greyed if used)
-    // movesLeft shows how many dice remain; the last (n - movesLeft.length) are used
-    const usedCount = dice.length - (movesLeft ? movesLeft.length : 0);
+    // Determine which specific die values are still available.
+    // We match by value (not by position) so the right die lights up/dims
+    // regardless of which order the dice were rolled in.
+    const remaining = (movesLeft && !this._rolling) ? [...movesLeft] : null;
 
     for (let i = 0; i < n; i++) {
       const x   = startX + i * (DIE_SIZE + SPACING);
       const y   = INNER_Y + INNER_H / 2 - DIE_SIZE / 2 - 4;
-      const used = !this._rolling && i < usedCount;
-      const val  = values[i] || 1;
+      const val = values[i] || 1;
+
+      let used = false;
+      if (!this._rolling && remaining !== null) {
+        const idx = remaining.indexOf(val);
+        if (idx !== -1) {
+          remaining.splice(idx, 1);  // consume — this slot is still available
+          used = false;
+        } else {
+          used = true;               // value no longer in movesLeft → spent
+        }
+      }
 
       this._drawDie(x, y, val, isWhite, used, this._rolling);
     }
