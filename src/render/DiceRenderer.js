@@ -99,16 +99,18 @@ export class DiceRenderer {
     ctx.shadowOffsetY = 3;
 
     // Background
+    // used  = already spent → bright (just played)
+    // !used = still available → dim/translucent (waiting to be used)
     let bgColor, dotColor;
     if (used) {
-      bgColor  = isWhite ? 'rgba(200,200,200,0.3)' : 'rgba(50,50,50,0.3)';
-      dotColor = 'rgba(128,128,128,0.4)';
+      bgColor  = isWhite ? '#f5f5f0' : '#1e1e1e';
+      dotColor = isWhite ? '#1a1a1a' : '#e0e0e0';
     } else if (rolling) {
       bgColor  = isWhite ? '#fffde0' : '#1a1a1a';
       dotColor = isWhite ? '#222' : '#ddd';
     } else {
-      bgColor  = isWhite ? '#f5f5f0' : '#1e1e1e';
-      dotColor = isWhite ? '#1a1a1a' : '#e0e0e0';
+      bgColor  = isWhite ? 'rgba(200,200,200,0.28)' : 'rgba(50,50,50,0.28)';
+      dotColor = 'rgba(150,150,150,0.5)';
     }
 
     ctx.fillStyle = bgColor;
@@ -119,7 +121,7 @@ export class DiceRenderer {
 
     // Border
     ctx.save();
-    ctx.strokeStyle = used ? 'rgba(128,128,128,0.2)' : (isWhite ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)');
+    ctx.strokeStyle = used ? (isWhite ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.2)') : 'rgba(128,128,128,0.2)';
     ctx.lineWidth   = 1;
     ctx.beginPath();
     ctx.roundRect(x, y, DIE_SIZE, DIE_SIZE, DIE_RADIUS);
